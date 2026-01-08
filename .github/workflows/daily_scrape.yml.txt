@@ -1,0 +1,27 @@
+name: Daily Rental Scraper
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # Runs at 9:00 AM UTC every day
+  workflow_dispatch:      # Allows you to click a button to run it manually
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Libraries
+        run: pip install -r requirements.txt
+
+      - name: Run Scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python scrape_rentals.py
