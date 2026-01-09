@@ -40,7 +40,7 @@ def generate_rental():
         "beds": fake.random_int(min=1, max=4),
         "baths": fake.random_int(min=1, max=3),
         "description": fake.text(max_nb_chars=100),
-        "property_type": random.choice(PROPERTY_TYPES)
+        "property_type": random.choice(PROPERTY_TYPES),
         "url": f"https://www.daft.ie/{fake.uuid4()}",  # Fake URL
         "ber_rating": random.choice(BER_RATINGS)      # NEW: BER Rating
     }
