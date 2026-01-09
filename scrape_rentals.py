@@ -1,35 +1,70 @@
 import os
 import random
+import logging
+import time
+import sys
 from faker import Faker
-from supabase import create_client, Client # New import
+from supabase import create_client, Client 
+from datetime import datetime
 
-# --- CONFIGURATION ---
-# We use os.environ.get to keep keys secret (we set them up later)
+# LOGGING
+logging.basicConfig(
+    level= logging.INFO,
+    format= '%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+# SUPABASE CONFIGURATION
 URL = os.environ.get("SUPABASE_URL")
 KEY = os.environ.get("SUPABASE_KEY")
 
-# Initialize connection
+if not URL or not KEY: 
+    logging.error("Supabase credentials not found in env variables")
+    sys.exit(1)
+try: 
+    supabase: Client = create_client(URL, KEY)
+except Exception as e: 
+    logging.error(f"Failed to iniate Supabase client: {e}")
+    sys.exit(1)
+
 supabase: Client = create_client(URL, KEY)
 fake = Faker('en_IE')
 
-def get_rental_data():
-    print("🤖 Simulating scrape...")
-    listings = []
-    for _ in range(5):
-        listing = {
-            "title": f"{fake.building_number()} {fake.street_name()}, Dublin {random.randint(1, 24)}",
-            "price": random.randint(1800, 4500),
-            "beds": random.choice([1, 2, 3]),
-            "baths": random.choice([1, 2]),
-            "property_type": random.choice(["Apartment", "House"])
-        }
-        listings.append(listing)
-    return listings
+BER_RATINGS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'E1', 'E2', 'F', 'G']
 
-# Run and Upload
-data = get_rental_data()
+def generate_rental():
+    """Generates a single row of realistic fake rental data."""
+    return {
+        "title": f"{fake.random_int(min=1, max=4)} Bed Apartment in {fake.city()}",
+        "price": fake.random_int(min=1800, max=4500),
+        "location": fake.city(),
+        "bedrooms": fake.random_int(min=1, max=4),
+        "bathrooms": fake.random_int(min=1, max=3),
+        "description": fake.text(max_nb_chars=100),
+        "url": f"https://www.daft.ie/{fake.uuid4()}",  # Fake URL
+        "ber_rating": random.choice(BER_RATINGS),       # NEW: BER Rating
+        "date_scraped": datetime.now().isoformat()
+    }
 
-# Insert into Supabase 'listings' table
-response = supabase.table("listings").insert(data).execute()
+def main():
+    logging.info("Starting Daily Rental Ingestion Job...")
+    
+    try:
+        # Generate 10 to 20 listings (Increased Volume)
+        num_listings = random.randint(10, 20)
+        logging.info(f"Generating {num_listings} new listings...")
 
-print(f"✅ Uploaded {len(data)} listings to Supabase!")
+        data_to_insert = [generate_rental() for _ in range(num_listings)]
+
+        # Insert into Supabase
+        response = supabase.table("rentals").insert(data_to_insert).execute()
+        
+        logging.info(f"Successfully inserted {len(data_to_insert)} rows into Supabase.")
+        logging.info("Job completed successfully.")
+
+    except Exception as e:
+        logging.error(f"CRITICAL FAILURE: ETL Pipeline crashed. Error: {e}")
+        sys.exit(1) # Non-zero exit code tells GitHub Actions the job failed
+
+if __name__ == "__main__":
+    main()
