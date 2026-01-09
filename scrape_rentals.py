@@ -27,7 +27,6 @@ except Exception as e:
     logging.error(f"Failed to iniate Supabase client: {e}")
     sys.exit(1)
 
-supabase: Client = create_client(URL, KEY)
 fake = Faker('en_IE')
 
 BER_RATINGS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'E1', 'E2', 'F', 'G']
@@ -50,21 +49,21 @@ def main():
     logging.info("Starting Daily Rental Ingestion Job...")
     
     try:
-        # Generate 10 to 20 listings (Increased Volume)
+        # Generate 10 to 20 listings
         num_listings = random.randint(10, 20)
         logging.info(f"Generating {num_listings} new listings...")
 
         data_to_insert = [generate_rental() for _ in range(num_listings)]
 
         # Insert into Supabase
-        response = supabase.table("rentals").insert(data_to_insert).execute()
+        response = supabase.table("listings").insert(data_to_insert).execute()
         
         logging.info(f"Successfully inserted {len(data_to_insert)} rows into Supabase.")
         logging.info("Job completed successfully.")
 
     except Exception as e:
         logging.error(f"CRITICAL FAILURE: ETL Pipeline crashed. Error: {e}")
-        sys.exit(1) # Non-zero exit code tells GitHub Actions the job failed
+        sys.exit(1) 
 
 if __name__ == "__main__":
     main()
