@@ -30,19 +30,19 @@ except Exception as e:
 fake = Faker('en_IE')
 
 BER_RATINGS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D1', 'D2', 'E1', 'E2', 'F', 'G']
+PROPERTY_TYPES = ['Apartment', 'House', 'Studio', 'Duplex', 'Shared Accommodation']
 
 def generate_rental():
     """Generates a single row of realistic fake rental data."""
     return {
         "title": f"{fake.random_int(min=1, max=4)} Bed Apartment in {fake.city()}",
         "price": fake.random_int(min=1800, max=4500),
-        "location": fake.city(),
-        "bedrooms": fake.random_int(min=1, max=4),
-        "bathrooms": fake.random_int(min=1, max=3),
+        "beds": fake.random_int(min=1, max=4),
+        "baths": fake.random_int(min=1, max=3),
         "description": fake.text(max_nb_chars=100),
+        "property_type": random.choice(PROPERTY_TYPES)
         "url": f"https://www.daft.ie/{fake.uuid4()}",  # Fake URL
-        "ber_rating": random.choice(BER_RATINGS),       # NEW: BER Rating
-        "date_scraped": datetime.now().isoformat()
+        "ber_rating": random.choice(BER_RATINGS)      # NEW: BER Rating
     }
 
 def main():
