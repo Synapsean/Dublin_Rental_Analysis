@@ -34,6 +34,18 @@ PROPERTY_TYPES = ['Apartment', 'House', 'Studio', 'Duplex', 'Shared Accommodatio
 
 def generate_rental():
     """Generates a single row of realistic fake rental data."""
+
+# 1. Generate a random Dublin District (e.g., "Dublin 7")
+    district_num = random.randint(1, 24)
+    area = f"Dublin {district_num}"
+    
+    # 2. Create a realistic street address
+    # fake.street_address() gives "123 Main St", we append ", Dublin 7"
+    full_address = f"{fake.street_address()}, {area}"
+    
+    # 3. Pick a property type first so it matches title
+    p_type = random.choice(PROPERTY_TYPES)
+        
     return {
         "title": f"{fake.random_int(min=1, max=4)} Bed Apartment in {fake.city()}",
         "price": fake.random_int(min=1800, max=4500),
