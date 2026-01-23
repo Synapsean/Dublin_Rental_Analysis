@@ -20,6 +20,13 @@ jobs:
       - name: Install Libraries
         run: pip install -r requirements.txt
 
+      - name: Debug - Reveal the Truth
+        run: |
+          echo "=== LISTING FILES ==="
+          ls -R
+          echo "=== CONTENT OF scrape_rentals.py ==="
+          cat scrape_rentals.py
+
       - name: Run Scraper
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
