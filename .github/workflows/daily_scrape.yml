@@ -20,7 +20,7 @@ jobs:
       - name: Install Libraries
         run: pip install -r requirements.txt
 
-        - name: Debug - Reveal the Truth
+      - name: Debug - Reveal the Truth
         run: |
           echo "=== LISTING FILES ==="
           ls -R
