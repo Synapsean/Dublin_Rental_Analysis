@@ -1,12 +1,12 @@
-name: Daily Rental Scraper
+name: Quarterly RTB Data Refresh
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # Runs at 10:00 AM UTC every day
-  workflow_dispatch:      # Allows you to click a button to run it manually
+    - cron: '0 10 1 1,4,7,10 *'  # 1st of Jan, Apr, Jul, Oct (quarterly)
+  workflow_dispatch:              # Manual trigger
 
 jobs:
-  run-script:
+  refresh-data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -15,20 +15,18 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
-      - name: Install Libraries
-        run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install pandas requests
 
-      - name: Debug - Reveal the Truth
+      - name: Download RTB data
+        run: python download_rtb_data.py
+
+      - name: Commit updated data
         run: |
-          echo "=== LISTING FILES ==="
-          ls -R
-          echo "=== CONTENT OF scrape_rentals.py ==="
-          cat scrape_rentals.py
-
-      - name: Run Scraper
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: python scrape_rentals.py
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/dublin_rents.csv
+          git diff --staged --quiet || git commit -m "Auto-update RTB data $(date +%Y-%m)"
+          git push

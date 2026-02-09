@@ -1,0 +1,32 @@
+name: Quarterly RTB Data Refresh
+
+on:
+  schedule:
+    - cron: '0 10 1 1,4,7,10 *'  # 1st of Jan, Apr, Jul, Oct (quarterly)
+  workflow_dispatch:              # Manual trigger
+
+jobs:
+  refresh-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas requests
+
+      - name: Download RTB data
+        run: python download_rtb_data.py
+
+      - name: Commit updated data
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/dublin_rents.csv
+          git diff --staged --quiet || git commit -m "Auto-update RTB data $(date +%Y-%m)"
+          git push
