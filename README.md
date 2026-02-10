@@ -90,6 +90,37 @@ This project demonstrates time series forecasting fundamentals and data pipeline
 4. Containerize with Docker for reproducible deployment
 5. Add ARIMA/SARIMAX models for comparison
 
+### Performance Metrics (Post-Refactoring)
+
+Once walk-forward validation and exogenous variables are implemented, the following metrics will be calculated:
+
+**Backtesting Performance (Last 6 Months):**
+- **MAE (Mean Absolute Error)**: Average €s the model is off by
+- **RMSE (Root Mean Squared Error)**: Penalizes large prediction errors
+- **MAPE (Mean Absolute Percentage Error)**: Average % error
+- **Target**: MAE <€50 per month, MAPE <3% for production readiness
+- **Status**: Requires walk-forward cross-validation implementation
+
+**Walk-Forward Validation:**
+- Simulate real-world quarterly forecasting (Q1 2024 → Q2 2024, Q2 2024 → Q3 2024, etc.)
+- Current: Single train/test split (one scenario)
+- Planned: 6+ rolling forecasts across 2024-2025
+- **Metric**: Average MAE across all forecast windows
+- **Status**: Requires TimeSeriesSplit implementation
+
+**Model Comparison with Exogenous Variables:**
+- Baseline Prophet (time-only): MAE = ?
+- Prophet + Interest Rates: MAE = ?
+- Prophet + Interest Rates + Housing Supply: MAE = ?
+- Expected improvement: 15-25% MAE reduction with covariates
+- **Status**: Requires FRED API integration
+
+**Production Readiness Benchmark:**
+- Forecast accuracy: MAE <€50/month
+- Confidence intervals: 90% of actuals fall within prediction bands
+- Computational cost: <2 seconds for full forecast refresh
+- **Status**: Requires full refactoring
+
 This repository showcases data pipeline development and deployment capabilities. The modeling sophistication is intentionally kept simple for demonstrative purposes.
 
 ---
