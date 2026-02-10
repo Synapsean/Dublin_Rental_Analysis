@@ -55,6 +55,45 @@ Advanced forecasting with:
 - **RMSE**: Root Mean Squared Error (penalises big errors)
 - **MAPE**: Mean Absolute Percentage Error
 
+## ⚠️ Technical Considerations
+
+**Note on Current Implementation:**
+
+This project demonstrates time series forecasting fundamentals and data pipeline development. However, there are known limitations in the current approach:
+
+**Univariate Modeling:**
+- Current models (Linear Regression, Prophet) only use historical rent prices
+- Real rental markets are influenced by exogenous factors: ECB interest rates, housing supply, employment rates, economic indicators
+- Industry-standard approach would include external covariates (e.g., FRED API for economic data)
+
+**Validation Methodology:**
+- Current evaluation uses single train/test split (80/20)
+- Production forecasting requires **walk-forward validation** (TimeSeriesSplit)
+- Should simulate real-world usage: predict next quarter using all previous data, then roll forward
+
+**Scalability:**
+- Data loading builds entire dataset in memory before processing
+- Works for 146K records but would fail at millions of records
+- Production systems use streaming/chunking for memory efficiency
+
+**What This Project Demonstrates:**
+- ✅ API integration with official government data sources
+- ✅ Time series data preprocessing and cleaning
+- ✅ Baseline vs advanced model comparison
+- ✅ Interactive dashboard deployment (Streamlit)
+- ✅ Automated data refresh (GitHub Actions CI/CD)
+
+**Planned Improvements:**
+1. Add exogenous variables (interest rates, housing completions) via FRED API
+2. Implement walk-forward cross-validation for realistic evaluation
+3. Refactor ETL to use streaming/chunking for scalability
+4. Containerize with Docker for reproducible deployment
+5. Add ARIMA/SARIMAX models for comparison
+
+This repository showcases data pipeline development and deployment capabilities. The modeling sophistication is intentionally kept simple for demonstrative purposes.
+
+---
+
 ## 🚀 Quick Start
 
 1. **Clone and install:**
