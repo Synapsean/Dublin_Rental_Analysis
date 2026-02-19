@@ -5,6 +5,7 @@ Interactive dashboard for analysing and forecasting Dublin rental prices using o
 ![Python](https://img.shields.io/badge/Python-3.9+-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
 ![Data](https://img.shields.io/badge/Data-RTB%20Official-green)
+![Last Updated](https://img.shields.io/badge/Last%20Updated-February%202026-brightgreen)
 
 ## 🎯 Overview
 
